@@ -64,6 +64,7 @@ public class DSSV extends JFrame implements ActionListener {
         // add JButton
         pnTTDSSV.add(btnDoc);
         pnTTDSSV.add(btnThem);
+        pnTTDSSV.add(btnSua);
 
         this.setVisible(true);
 
@@ -111,7 +112,7 @@ public class DSSV extends JFrame implements ActionListener {
             } catch (Exception e1) {
                 System.out.println(e1.getMessage());
             }
-        } else/* btn them */ if(e.getSource() == btnThem) {
+        } else if (e.getSource() == btnThem) {
             String check = txtMSSV.getText();
             if (checkMa(check) == 0) {
                 JOptionPane.showMessageDialog(null, "MSSV bi trung", "Loi", JOptionPane.ERROR_MESSAGE);
@@ -145,6 +146,39 @@ public class DSSV extends JFrame implements ActionListener {
                     row.add(sv.getGmail());
                     row.add(sv.getDob());
                     model.addRow(row);
+                    tblDSSV.setModel(model);
+                } catch (Exception e1) {
+                    System.out.println(e1.getMessage());
+                }
+            }
+        } else if (e.getSource() == btnSua) {
+            int i = tblDSSV.getSelectedRow();
+            if (i >= 0) {
+                SinhVien sv = new SinhVien();
+                SinhVien svBak = dssv.set(i, sv);
+                sv.setMSSV(txtMSSV.getText());
+                sv.setHo(txtHo.getText());
+                sv.setTen(txtTen.getText());
+                sv.setGmail(txtGmail.getText());
+                sv.setDob(txtDob.getText());
+                try {
+                    String userName = "root";
+                    String password = "";
+                    String url = "jdbc:mysql://localhost:3306/dssv";
+                    Class.forName("com.mysql.jdbc.Driver");
+                    conn = DriverManager.getConnection(url, userName, password);
+                    String query = "update sinhvien set " + "MSSV=" + "'" + sv.getMSSV() + "'" +
+                            ",Ho=" + "N'" + sv.getHo() + "'" + ",Ten=" + "N'" + sv.getTen() + "'" + ",Gmail=" + "'"
+                            + sv.getGmail() + "'" + ",DoB=" + "'" + sv.getDob() + "'" + " " + "where MSSV='"
+                            + svBak.getMSSV() + "'";
+                    st = conn.createStatement();
+                    st.executeUpdate(query);
+
+                    model.setValueAt(sv.getMSSV(), i, 0);
+                    model.setValueAt(sv.getHo(), i, 1);
+                    model.setValueAt(sv.getTen(), i, 2);
+                    model.setValueAt(sv.getGmail(), i, 3);
+                    model.setValueAt(sv.getDob(), i, 4);
                     tblDSSV.setModel(model);
                 } catch (Exception e1) {
                     System.out.println(e1.getMessage());
@@ -253,6 +287,7 @@ public class DSSV extends JFrame implements ActionListener {
         btnDoc.setBackground(Color.cyan);
         btnDoc.setBorder(new RoundedBorder(10));
         btnDoc.addActionListener(this);
+
         // btn them
         btnThem = new JButton("Them");
         btnThem.setFont(new Font("Arial", Font.BOLD, 15));
@@ -260,6 +295,15 @@ public class DSSV extends JFrame implements ActionListener {
         btnThem.setBackground(Color.cyan);
         btnThem.setBorder(new RoundedBorder(10));
         btnThem.addActionListener(this);
+
+        // btn sua
+        btnSua = new JButton("Sua");
+        btnSua.setFont(new Font("Arial", Font.BOLD, 15));
+        btnSua.setBounds(340, 330, 100, 40);
+        btnSua.setBackground(Color.cyan);
+        btnSua.setBorder(new RoundedBorder(10));
+        btnSua.addActionListener(this);
+
         // btn xoa
         btnXoa = new JButton("Xoa");
         btnXoa.setFont(new Font("Arial", Font.BOLD, 15));
