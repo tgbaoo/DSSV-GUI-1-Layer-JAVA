@@ -65,9 +65,25 @@ public class DSSV extends JFrame implements ActionListener {
         pnTTDSSV.add(btnDoc);
         pnTTDSSV.add(btnThem);
         pnTTDSSV.add(btnSua);
+        pnTTDSSV.add(btnXoa);
 
         this.setVisible(true);
 
+        tblDSSV.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDSSVMouseClicked(evt);
+            }
+        });
+    }
+
+
+    public void tblDSSVMouseClicked(java.awt.event.MouseEvent evt) {
+        int i = tblDSSV.getSelectedRow();
+        txtMSSV.setText(tblDSSV.getModel().getValueAt(i, 0).toString());
+        txtHo.setText(tblDSSV.getModel().getValueAt(i, 1).toString());
+        txtTen.setText(tblDSSV.getModel().getValueAt(i, 2).toString());
+        txtGmail.setText(tblDSSV.getModel().getValueAt(i, 3).toString());
+        txtDob.setText(tblDSSV.getModel().getValueAt(i, 4).toString());
     }
 
     @Override
@@ -154,6 +170,7 @@ public class DSSV extends JFrame implements ActionListener {
         } else if (e.getSource() == btnSua) {
             int i = tblDSSV.getSelectedRow();
             if (i >= 0) {
+
                 SinhVien sv = new SinhVien();
                 SinhVien svBak = dssv.set(i, sv);
                 sv.setMSSV(txtMSSV.getText());
@@ -179,6 +196,26 @@ public class DSSV extends JFrame implements ActionListener {
                     model.setValueAt(sv.getTen(), i, 2);
                     model.setValueAt(sv.getGmail(), i, 3);
                     model.setValueAt(sv.getDob(), i, 4);
+                    tblDSSV.setModel(model);
+                } catch (Exception e1) {
+                    System.out.println(e1.getMessage());
+                }
+            }
+        } else if (e.getSource() == btnXoa) {
+            String mssv = txtMSSV.getText();
+            int i = tblDSSV.getSelectedRow();
+            if (i >= 0) {
+                try {
+                    String userName = "root";
+                    String password = "";
+                    String url = "jdbc:mysql://localhost:3306/dssv";
+                    Class.forName("com.mysql.jdbc.Driver");
+                    conn = DriverManager.getConnection(url, userName, password);
+                    String query = "delete from sinhvien where MSSV='" + mssv + "'";
+                    st = conn.createStatement();
+                    st.executeUpdate(query);
+                    dssv.remove(i);
+                    model.removeRow(i);
                     tblDSSV.setModel(model);
                 } catch (Exception e1) {
                     System.out.println(e1.getMessage());
@@ -307,7 +344,7 @@ public class DSSV extends JFrame implements ActionListener {
         // btn xoa
         btnXoa = new JButton("Xoa");
         btnXoa.setFont(new Font("Arial", Font.BOLD, 15));
-        btnXoa.setBounds(340, 330, 100, 40);
+        btnXoa.setBounds(450, 330, 100, 40);
         btnXoa.setBackground(Color.cyan);
         btnXoa.setBorder(new RoundedBorder(10));
         btnXoa.addActionListener(this);
